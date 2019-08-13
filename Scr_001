@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Aug 10 17:20:59 2019
+
+@author: Luming
+"""
+
+import requests
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
+import pandas as pd
+import numpy as np
+namee = []
+a= []
+data_index=[]
+text=[]
+id_num= []
+t_num = []
+we_num = []
+air_num = []
+aac_num = []
+test=[]
+new_text=[]
+sta_id = []
+r = requests.get('http://ec2-54-175-179-28.compute-1.amazonaws.com/get_info_extra.php')
+soup = BeautifulSoup(r.text,'lxml')
+b = soup.find_all('p')
+
+#form the database get the list
+for i in soup.find_all('p'):
+    a.append(i.string)
+d= re.split('\W\s+',str(a))
+
+#get the index
+it = re.finditer(r"\D\w+",str(d[:74])) 
+for match in it:
+    text.append(match.group())
+for i in range(len(text)):
+    test.append(text[i][1:])
+for i in range(len(test)):
+    new_it = re.compile(r'\D+')
+    m = new_it.findall(test[i])
+    if m != []:
+        new_text.append(m)
+new_series= pd.Series(new_text)
+new_index = new_series[0:5] 
+
+# data input the item_list
+
+for i in range(len(d)):
+    if d[i] == 'id':
+        id_num.append(d[i+1])
+    elif d[i] == 'time ':
+        t_num.append(d[i+1])
+    elif d[i] == 'weather ':
+        we_num.append(d[i+1])
+    elif d[i] == 'air ':
+        air_num.append(d[i+1])
+    elif d[i] == 'acceleration ':
+        aac_num.append(d[i+1])
+for i in range(len(aac_num)):
+    id_num.append(aac_num[i].strip(',id ').strip(",']"))
+sta_id = np.arange(len(aac_num))
+dic = {'count':sta_id,'time':t_num,'weather':we_num,'air':air_num,'acceleration':aac_num}
+aaa = pd.DataFrame(dic)    
+    
+# =============================================================================
+# for i in range(len(new_index)):
+#     if new_index[i] == 'id':
+#         new_index[i].join(sta_id)
+#     elif new_index[i] == 'time':
+#         new_index[i].join(t_num)
+#     elif new_index[i] == 'weather':
+#         new_index[i].join(we_num)
+#     elif new_index[i] == 'air':
+#         new_index[i].join(air_num)
+#     elif new_index[i] == 'acceleration':
+#         new_index[i].join(aac_num)
+# 
+# =============================================================================
