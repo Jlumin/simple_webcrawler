@@ -11,9 +11,10 @@ from bs4 import BeautifulSoup
 import re
 import pandas as pd
 import numpy as np
-namee = []
+
+url=input('請輸入查詢網址:')
+sta_name = []
 a= []
-data_index=[]
 text=[]
 id_num= []
 t_num = []
@@ -23,7 +24,7 @@ aac_num = []
 test=[]
 new_text=[]
 sta_id = []
-r = requests.get('http://ec2-54-175-179-28.compute-1.amazonaws.com/get_info_extra.php')
+r = requests.get(url)
 soup = BeautifulSoup(r.text,'lxml')
 b = soup.find_all('p')
 
@@ -31,7 +32,7 @@ b = soup.find_all('p')
 for i in soup.find_all('p'):
     a.append(i.string)
 d= re.split('\W\s+',str(a))
-
+sta_name.append(d[1])
 #get the index
 it = re.finditer(r"\D\w+",str(d[:74])) 
 for match in it:
@@ -62,20 +63,9 @@ for i in range(len(d)):
 for i in range(len(aac_num)):
     id_num.append(aac_num[i].strip(',id ').strip(",']"))
 sta_id = np.arange(len(aac_num))
-dic = {'count':sta_id,'time':t_num,'weather':we_num,'air':air_num,'acceleration':aac_num}
-aaa = pd.DataFrame(dic)    
-    
-# =============================================================================
-# for i in range(len(new_index)):
-#     if new_index[i] == 'id':
-#         new_index[i].join(sta_id)
-#     elif new_index[i] == 'time':
-#         new_index[i].join(t_num)
-#     elif new_index[i] == 'weather':
-#         new_index[i].join(we_num)
-#     elif new_index[i] == 'air':
-#         new_index[i].join(air_num)
-#     elif new_index[i] == 'acceleration':
-#         new_index[i].join(aac_num)
-# 
-# =============================================================================
+dic = {'count':sta_id,'time':t_num,'weather':we_num,'air':air_num,'acceleration':id_num}
+d_recive = pd.DataFrame(dic)
+#ans = input('是否存成CSV檔:(Yes/NO)?')
+#if ans == 'Y' or 'y' or 'Yes' or 'YES':
+#    pd.DataFrame.to_csv("test.csv",index=True,sep=',')
+print(d_recive)
