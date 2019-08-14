@@ -12,7 +12,8 @@ import re
 import pandas as pd
 import numpy as np
 
-url=input('請輸入查詢網址:')
+#url=input('請輸入查詢網址:')#手動輸入網誌#
+url='http://ec2-54-175-179-28.compute-1.amazonaws.com/get_info_extra.php'
 sta_name = []
 a= []
 text=[]
@@ -24,9 +25,10 @@ aac_num = []
 test=[]
 new_text=[]
 sta_id = []
+x = []
+
 r = requests.get(url)
 soup = BeautifulSoup(r.text,'lxml')
-b = soup.find_all('p')
 
 #form the database get the list
 for i in soup.find_all('p'):
@@ -46,26 +48,28 @@ for i in range(len(test)):
         new_text.append(m)
 new_series= pd.Series(new_text)
 new_index = new_series[0:5] 
-
+for i in range(len(d)):
+    x.append(d[i].strip().lstrip())
 # data input the item_list
 
 for i in range(len(d)):
-    if d[i] == 'id':
-        id_num.append(d[i+1])
-    elif d[i] == 'time ':
-        t_num.append(d[i+1])
-    elif d[i] == 'weather ':
-        we_num.append(d[i+1])
-    elif d[i] == 'air ':
-        air_num.append(d[i+1])
-    elif d[i] == 'acceleration ':
-        aac_num.append(d[i+1])
+    if x[i] == new_text[0][0]:
+        id_num.append(x[i+1])
+    elif x[i] == new_text[1][0]:
+        t_num.append(x[i+1])
+    elif x[i] == new_text[2][0]:
+        we_num.append(x[i+1])
+    elif x[i] == new_text[3][0]:
+        air_num.append(x[i+1])
+    elif x[i] == new_text[4][0]:
+        aac_num.append(x[i+1])
 for i in range(len(aac_num)):
-    id_num.append(aac_num[i].strip(',id ').strip(",']"))
-sta_id = np.arange(len(aac_num))
-dic = {'count':sta_id,'time':t_num,'weather':we_num,'air':air_num,'acceleration':id_num}
+    id_num.append(aac_num[i].strip(',id').strip(",']"))
+
+sta_id = np.arange(len(air_num))
+
+dic = {'count':sta_id,'time':t_num,'weather':we_num,'air':air_num,'acceleration':aac_num}
 d_recive = pd.DataFrame(dic)
-#ans = input('是否存成CSV檔:(Yes/NO)?')
-#if ans == 'Y' or 'y' or 'Yes' or 'YES':
-#    pd.DataFrame.to_csv("test.csv",index=True,sep=',')
+d_recive.replace('id',' ',inplace = True)
+
 print(d_recive)
