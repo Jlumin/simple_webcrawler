@@ -12,7 +12,7 @@ import re
 import pandas as pd
 import numpy as np
 
-#url=input('請輸入查詢網址:')#手動輸入網誌#
+#url=input('請輸入查詢網址:')
 url='http://www.amazonaws.com/get_info_extra.php'
 sta_name = []
 a= []
